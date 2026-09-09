@@ -1,6 +1,32 @@
 # SideKey
 
-Make the Unihertz Titan's dedicated keys do anything, not just launch an app.
+Make the **Unihertz Titan 2 Elite**'s programmable keys do anything, not just
+launch an app.
+
+Built and tested on a Titan 2 Elite running Android 16, and nothing else. It
+relies on how that phone's Shortcut keys settings work, so other Unihertz
+models may or may not behave the same way — if you try one, an issue saying
+what happened is welcome.
+
+## Install
+
+[**Download the latest APK**](https://github.com/jakevibes/SideKey/releases/latest)
+— open that page on the phone, tap `SideKey-1.0.apk` under **Assets**, and
+open it when the download finishes.
+
+Android will say your browser is not allowed to install unknown apps; tap the
+prompt, turn the switch on for that browser, and press back. That is the normal
+sideloading dance, not something this app asks for.
+
+Or over a cable:
+
+```bash
+adb install SideKey-1.0.apk
+```
+
+Every release is signed with the same key, so updates install over the top. A
+build you compiled yourself is signed with a different key and will not, so
+pick one and stay with it.
 
 ## How it works
 
@@ -19,9 +45,11 @@ Nothing is intercepted, nothing is patched, no root.
 ## Using it
 
 1. Open **SideKey**, tap a slot, pick what it should do.
-2. Open the phone's shortcut settings (there is a button for it, and it goes
-   straight to the Func1 page). Map short press, long press and double click to
-   whichever slots you want — all ten are listed under **All apps**.
+2. Open the phone's shortcut settings — there is a button for it, and it goes
+   straight to the Func1 page. On the Titan 2 Elite that screen lives at
+   **Settings → Shortcut keys → Func1 key → Shortcut settings**, and it gives
+   you **short press, long press and double click**. Point each at whichever
+   slot you want; all ten are listed under **All apps**.
 
 Hold a slot in SideKey to try it without pressing the key.
 
@@ -33,7 +61,7 @@ you have to know:
 1. **Open something inside an app.** Lists every app that offers a deep link of
    its own and opens that app's picker, so you never type a URI. This is
    `ACTION_CREATE_SHORTCUT`, the mechanism launchers use for "add shortcut" —
-   any app may call it, no launcher privilege needed. On a stock-ish Titan that
+   any app may call it, no launcher privilege needed. On a Titan 2 Elite that
    is about a dozen apps: WhatsApp (a chat, the camera), Contacts (direct dial,
    direct message, a contact), Maps (directions, driving mode, traffic, a
    friend's location), Gmail (a label), Settings (any page), Drive, Docs,
@@ -93,7 +121,7 @@ adb shell settings put system func1_short_press_package com.snflist.sidekey
 adb shell settings put system func1_short_press_activity com.snflist.sidekey.Slot1
 ```
 
-## Build
+## Building it yourself
 
 Framework only: no AndroidX, no Compose, no third-party libraries. About 990
 lines of Kotlin and a 670 KB APK.
