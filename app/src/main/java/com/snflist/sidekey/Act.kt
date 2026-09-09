@@ -20,8 +20,7 @@ import android.view.KeyEvent
 import java.io.BufferedReader
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Doing the thing.
@@ -181,12 +180,18 @@ object Act {
     }
 
     /**
-     * The torch, read before it is written.
+     * The torch, read before it is written - without blocking to do it.
      *
      * A remembered boolean goes wrong the moment anything else touches the
-     * flash or the process is killed, so the real state is asked for first.
-     * registerTorchCallback reports the current state immediately, hence the
-     * very short wait rather than a long one.
+     * flash, so the real state is asked for. But registerTorchCallback answers
+     * on its own schedule, and on a cold start - which is nearly every press,
+     * since this activity finishes at once and the process is then reclaimed -
+     * that takes longer than it is reasonable to sit and wait for. Waiting a
+     * few hundred milliseconds and then guessing "off" is worse than useless:
+     * it turns the torch on again when you meant to turn it off.
+     *
+     * So the toggle happens inside the callback, and the remembered value is
+     * only the backstop for an answer that never comes.
      */
     private fun torch(context: Context): String? {
         val manager = context.getSystemService(CameraManager::class.java) ?: return "no camera service"
@@ -195,25 +200,32 @@ object Act {
                 .get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
         } ?: return "this phone has no torch"
 
-        val thread = HandlerThread("torch-state").apply { start() }
-        var on = false
-        val latch = CountDownLatch(1)
-        val callback = object : CameraManager.TorchCallback() {
-            override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
-                if (cameraId != id) return
-                on = enabled
-                latch.countDown()
+        val prefs = Prefs(context.applicationContext)
+        val thread = HandlerThread("torch").apply { start() }
+        val handler = Handler(thread.looper)
+        val settled = AtomicBoolean(false)
+        var callback: CameraManager.TorchCallback? = null
+
+        fun toggle(currentlyOn: Boolean) {
+            if (!settled.compareAndSet(false, true)) return
+            val next = !currentlyOn
+            try {
+                manager.setTorchMode(id, next)
+                prefs.torchOn = next
+            } catch (e: Exception) {
+                // The flash can be held by the camera app; nothing to do.
             }
-        }
-        try {
-            manager.registerTorchCallback(callback, Handler(thread.looper))
-            latch.await(400, TimeUnit.MILLISECONDS)
-            manager.unregisterTorchCallback(callback)
-        } finally {
+            callback?.let { runCatching { manager.unregisterTorchCallback(it) } }
             thread.quitSafely()
         }
 
-        manager.setTorchMode(id, !on)
+        callback = object : CameraManager.TorchCallback() {
+            override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
+                if (cameraId == id) toggle(enabled)
+            }
+        }
+        manager.registerTorchCallback(callback, handler)
+        handler.postDelayed({ toggle(prefs.torchOn) }, 1500)
         return null
     }
 

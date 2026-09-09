@@ -18,6 +18,14 @@ class Prefs(context: Context) {
         }.apply()
     }
 
+    /**
+     * The last torch state we set. Only a backstop: the real state is asked
+     * for, and this is what gets used when the answer does not arrive.
+     */
+    var torchOn: Boolean
+        get() = prefs.getBoolean("torch", false)
+        set(value) = prefs.edit().putBoolean("torch", value).apply()
+
     /** Remembers the ringer step so the cycle is predictable. */
     var ringerStep: Int
         get() = prefs.getInt("ringer", 0)
