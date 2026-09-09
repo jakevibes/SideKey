@@ -1,35 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
+      Only the launch window. Compose paints everything a moment later, so all
+      this has to do is not flash the wrong colour first - hence the DayNight
+      background rather than a fixed one.
+    -->
     <style name="AppTheme" parent="@android:style/Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@color/bg</item>
-        <item name="android:colorAccent">@color/accent</item>
-        <item name="android:textColor">@color/fg</item>
-        <item name="android:statusBarColor">@color/bg</item>
-        <item name="android:navigationBarColor">@color/bg</item>
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:defaultFocusHighlightEnabled">false</item>
+        <item name="android:windowBackground">@color/launch_bg</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
     </style>
 
     <!--
       The slot activity must not be Theme.NoDisplay: a no-display activity has
-      to finish before onResume returns, and multi-press detection deliberately
-      stays alive for a few hundred milliseconds. Translucent is invisible in
-      exactly the same way without that rule.
+      to finish before onResume returns. Translucent is invisible in the same
+      way without that rule.
     -->
     <style name="Invisible" parent="@android:style/Theme.Translucent.NoTitleBar">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:backgroundDimEnabled">false</item>
-    </style>
-
-    <style name="MenuTheme" parent="@android:style/Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowAnimationStyle">@null</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:colorAccent">@color/accent</item>
-        <item name="android:defaultFocusHighlightEnabled">false</item>
     </style>
 </resources>

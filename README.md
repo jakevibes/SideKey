@@ -28,6 +28,8 @@ Every release is signed with the same key, so updates install over the top. A
 build you compiled yourself is signed with a different key and will not, so
 pick one and stay with it.
 
+Needs Android 8.0 or newer.
+
 ## How it works
 
 The side key is not an ordinary key. It belongs to `com.agui.shortcutsettings`
@@ -123,8 +125,18 @@ adb shell settings put system func1_short_press_activity com.snflist.sidekey.Slo
 
 ## Building it yourself
 
-Framework only: no AndroidX, no Compose, no third-party libraries. About 990
-lines of Kotlin and a 670 KB APK.
+Jetpack Compose and Material 3 (`material3` 1.4.0, via the Compose BOM). The
+UI follows Material You: on Android 12 and up the palette is derived from your
+wallpaper, and it follows the system light/dark setting.
+
+R8 and resource shrinking are on for release builds — without them Compose
+roughly doubles the APK and most of what it ships is never called. With them
+it is about 1.3 MB.
+
+Note that `MaterialExpressiveTheme` is internal as of material3 1.4.0:
+expressive graduated into `MaterialTheme` itself when it went stable, so
+`MaterialTheme` is the expressive one. Most tutorials still show the old entry
+point and will not compile.
 
 Built against AGP 9.4.0, Gradle 9.6.0, Kotlin 2.2.10 on Android Studio's
 bundled JBR 25. Gradle 8.x will not run on JDK 25, so keep this toolchain or
