@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Webhooks only. Nothing is sent anywhere unless you configure one. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Required to use ACTION_SET_TIMER / ACTION_SET_ALARM at all: without it
+         the system throws rather than saying no app handles the intent. -->
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <!-- One-press dialling. Asked for only when you map a slot to a call,
+         and refusing it just means the dialer opens with the number in it. -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <!-- Silent / do-not-disturb actions. Granted by hand in Settings. -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+
+    <!-- Android 11+ package visibility. We only need to see things with a
+         launcher entry, so no QUERY_ALL_PACKAGES. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <!-- Apps that offer a deep link of their own: WhatsApp's contact
+             picker, Contacts' direct dial, Maps' directions, Settings' pages. -->
+        <intent>
+            <action android:name="android.intent.action.CREATE_SHORTCUT" />
+        </intent>
+    </queries>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <!-- The one screen: ten slots, tap one, pick what it does. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Share a link from any app straight onto a key. -->
+        <activity
+            android:name=".ShareActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@style/Invisible">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <!--
+          The whole trick. The side key can only be pointed at an app, so each
+          slot is an app: ten activity-aliases with launcher entries and their
+          own names, all pointing at one invisible activity that reads which
+          alias was opened and runs whatever you assigned to it.
+        -->
+        <activity
+            android:name=".RunActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:theme="@style/Invisible" />
+
+        <activity-alias
+            android:name=".Slot1"
+            android:exported="true"
+            android:label="@string/slot_1"
+            android:targetActivity=".RunActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".Slot2"
+            android:exported="true"
+            android:label="@string/slot_2"
+            android:targetActivity=".RunActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".Slot3"
+            android:exported="true"
+            android:label="@string/slot_3"
+            android:targetActivity=".RunActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".Slot4"
+            android:exported="true"
+            android:label="@string/slot_4"
+            android:targetActivity=".RunActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".Slot5"
+            android:exported="true"
+            android:label="@string/slot_5"
+            android:targetActivity=".RunActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".Slot6"
+            android:exported="true"
+            android:label="@string/slot_6"
+            android:targetActivity=".RunActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".Slot7"
+            android:exported="true"
+            android:label="@string/slot_7"
+            android:targetActivity=".RunActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".Slot8"
+            android:exported="true"
+            android:label="@string/slot_8"
+            android:targetActivity=".RunActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".Slot9"
+            android:exported="true"
+            android:label="@string/slot_9"
+            android:targetActivity=".RunActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".Slot10"
+            android:exported="true"
+            android:label="@string/slot_10"
+            android:targetActivity=".RunActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Only for the system actions (back, recents, shade, lock,
+             screenshot). Enabled by hand; everything else works without it. -->
+        <service
+            android:name=".KeyService"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+    </application>
+</manifest>

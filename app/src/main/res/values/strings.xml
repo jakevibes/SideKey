@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SideKey</string>
+    <!-- These labels are what the phone's own shortcut picker shows, so they
+         are deliberately dull and sortable. They cannot change at runtime. -->
+    <string name="slot_1">SideKey 1</string>
+    <string name="slot_2">SideKey 2</string>
+    <string name="slot_3">SideKey 3</string>
+    <string name="slot_4">SideKey 4</string>
+    <string name="slot_5">SideKey 5</string>
+    <string name="slot_6">SideKey 6</string>
+    <string name="slot_7">SideKey 7</string>
+    <string name="slot_8">SideKey 8</string>
+    <string name="slot_9">SideKey 9</string>
+    <string name="slot_10">SideKey 10</string>
+    <string name="accessibility_description">Lets a SideKey slot press Back, open the notification shade, take a screenshot or lock the screen. SideKey reads nothing from your screen.</string>
+</resources>

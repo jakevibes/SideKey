@@ -1,0 +1,15 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- A phone edge with the side key standing proud of it. -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M38,30 h32 a6,6 0 0 1 6,6 v36 a6,6 0 0 1 -6,6 h-32 a6,6 0 0 1 -6,-6 v-36 a6,6 0 0 1 6,-6 z"
+        android:strokeColor="#F0EDE7"
+        android:strokeWidth="3" />
+    <path
+        android:fillColor="#C0564A"
+        android:pathData="M76,44 h6 a3,3 0 0 1 3,3 v14 a3,3 0 0 1 -3,3 h-6 z" />
+</vector>

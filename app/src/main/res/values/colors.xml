@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Same palette as SquareOS, so the two look like one system. -->
+    <color name="bg">#FF0B0B0D</color>
+    <color name="fg">#FFF0EDE7</color>
+    <color name="dim">#8CF0EDE7</color>
+    <color name="faint">#40F0EDE7</color>
+    <color name="accent">#FFC0564A</color>
+</resources>
