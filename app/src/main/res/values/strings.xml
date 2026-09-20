@@ -13,6 +13,7 @@
     <string name="slot_8">SideKey 8</string>
     <string name="slot_9">SideKey 9</string>
     <string name="slot_10">SideKey 10</string>
+    <string name="dictate_name">SideKey dictation</string>
     <string name="type_name">SideKey Dictation</string>
     <string name="type_description">Types what you dictate into whatever text box is focused, in any app. This is the only part of SideKey that can see the screen, and it looks only when a transcript is ready to insert. It is separate from the other SideKey service so you can use one without the other.</string>
     <string name="accessibility_description">Lets a SideKey slot press Back, open the notification shade, take a screenshot or lock the screen. SideKey reads nothing from your screen.</string>

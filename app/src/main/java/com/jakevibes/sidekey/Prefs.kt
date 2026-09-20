@@ -1,4 +1,4 @@
-package com.snflist.sidekey
+package com.jakevibes.sidekey
 
 import android.content.Context
 
@@ -62,7 +62,7 @@ object Slots {
     /** Which slot an intent landed on, or 0 if it was not a slot at all. */
     fun of(componentClass: String?): Int {
         val name = componentClass ?: return 0
-        for (slot in 1..COUNT) if (name == "com.snflist.sidekey.Slot$slot") return slot
+        for (slot in 1..COUNT) if (name == "com.jakevibes.sidekey.Slot$slot") return slot
         return 0
     }
 }

@@ -82,6 +82,7 @@
         <activity
             android:name=".RunActivity"
             android:excludeFromRecents="true"
+            android:label="@string/app_name"
             android:exported="false"
             android:launchMode="singleTask"
             android:taskAffinity=""
@@ -197,11 +198,15 @@
             </intent-filter>
         </activity-alias>
 
-        <!-- Holds the microphone between the two key presses. -->
+        <!-- Holds the microphone between the two key presses. Labelled
+             because a foreground service shows up by name in the running-apps
+             and microphone-usage screens, and an unlabelled one shows there as
+             its raw component name. -->
         <service
             android:name=".DictateService"
             android:exported="false"
-            android:foregroundServiceType="microphone" />
+            android:foregroundServiceType="microphone"
+            android:label="@string/dictate_name" />
 
         <!--
           The one service that can see the screen, kept separate from the

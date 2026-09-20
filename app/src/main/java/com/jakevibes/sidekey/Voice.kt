@@ -1,4 +1,4 @@
-package com.snflist.sidekey
+package com.jakevibes.sidekey
 
 import android.annotation.SuppressLint
 import android.content.Context

@@ -11,7 +11,7 @@ what happened is welcome.
 ## Install
 
 [**Download the latest APK**](https://github.com/jakevibes/SideKey/releases/latest)
-— open that page on the phone, tap `SideKey-1.3.apk` under **Assets**, and
+— open that page on the phone, tap `SideKey-2.0.apk` under **Assets**, and
 open it when the download finishes.
 
 Android will say your browser is not allowed to install unknown apps; tap the
@@ -21,10 +21,16 @@ sideloading dance, not something this app asks for.
 Or over a cable:
 
 ```bash
-adb install SideKey-1.3.apk
+adb install SideKey-2.0.apk
 ```
 
-Every release is signed with the same key, so updates install over the top. A
+**Upgrading from 1.x:** 2.0 changed the app's package name, which Android
+treats as a different app entirely. Uninstall the old SideKey first, then
+install this one and re-point your keys in the shortcut settings — the phone
+stores the mapping by package name, so it will still be aimed at the app you
+removed. Slots are not carried across.
+
+Every 2.x release is signed with the same key, so updates install over the top. A
 build you compiled yourself is signed with a different key and will not, so
 pick one and stay with it.
 
@@ -166,8 +172,8 @@ neither `WRITE_SETTINGS` nor `WRITE_SECURE_SETTINGS` helps. Both were tried.
 adb is the shell uid, so it is exempt, if you would rather not tap:
 
 ```bash
-adb shell settings put system func1_short_press_package com.snflist.sidekey
-adb shell settings put system func1_short_press_activity com.snflist.sidekey.Slot1
+adb shell settings put system func1_short_press_package com.jakevibes.sidekey
+adb shell settings put system func1_short_press_activity com.jakevibes.sidekey.Slot1
 ```
 
 ## Building it yourself

@@ -1,4 +1,4 @@
-package com.snflist.sidekey
+package com.jakevibes.sidekey
 
 import android.content.ComponentName
 import android.content.Context

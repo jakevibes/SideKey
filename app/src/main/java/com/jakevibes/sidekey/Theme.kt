@@ -1,4 +1,4 @@
-package com.snflist.sidekey
+package com.jakevibes.sidekey
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

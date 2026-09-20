@@ -1,4 +1,4 @@
-package com.snflist.sidekey
+package com.jakevibes.sidekey
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -122,7 +122,7 @@ class DictateService : Service() {
     companion object {
         private const val CHANNEL = "dictation"
         private const val NOTIFICATION = 1
-        const val ACTION_STOP = "com.snflist.sidekey.STOP_DICTATION"
+        const val ACTION_STOP = "com.jakevibes.sidekey.STOP_DICTATION"
 
         /**
          * Three states, because the recorder thread can end a recording at the

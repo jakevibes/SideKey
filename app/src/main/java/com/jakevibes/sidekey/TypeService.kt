@@ -1,4 +1,4 @@
-package com.snflist.sidekey
+package com.jakevibes.sidekey
 
 import android.accessibilityservice.AccessibilityService
 import android.content.ClipData
@@ -54,33 +54,49 @@ class TypeService : AccessibilityService() {
         }
 
         /**
-         * Appends [text] at the cursor, and says whether it landed.
+         * Puts [text] at the cursor, and says whether it landed.
          *
-         * ACTION_SET_TEXT replaces a field wholesale, so the existing contents
-         * have to be read and put back with the new words on the end. Some
-         * fields refuse it - WebViews especially - so the fallback is to put
-         * the text on the clipboard and ask the field to paste, which more of
-         * them accept.
+         * Pasting first, deliberately. The obvious approach - read the field,
+         * append, write it back with ACTION_SET_TEXT - has a trap in it:
+         * getText() returns the *hint* when a field is empty, so an empty
+         * WhatsApp box reads back as "Message" and you get that word in front
+         * of everything you say. There are flags meant to tell you that is
+         * happening and they are not reliable across apps.
+         *
+         * ACTION_PASTE never reads the field at all. It inserts at the cursor,
+         * which is also the behaviour you want when adding to a half-written
+         * message. SET_TEXT stays as the fallback for fields that refuse to
+         * paste, and there the hint is guarded against as carefully as it can
+         * be.
          */
         fun type(context: Context, text: String): Boolean {
             val service = instance ?: return false
-            val focused = service.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
-                ?: return false
-
+            val focused = service.findFocus(AccessibilityNodeInfo.FOCUS_INPUT) ?: return false
             if (!focused.isEditable) {
                 focused.recycle()
                 return false
             }
 
-            // getText() returns the *hint* when the field is empty, so an
-            // empty WhatsApp box reads back as "Message" and dictation would
-            // append to that. isShowingHintText is the official way to tell,
-            // and the hint is compared as well for fields that do not set it.
+            val clipboard = context.getSystemService(ClipboardManager::class.java)
+            val previous = clipboard?.primaryClip
+            clipboard?.setPrimaryClip(ClipData.newPlainText("Dictation", text))
+
+            if (focused.performAction(AccessibilityNodeInfo.ACTION_PASTE)) {
+                focused.recycle()
+                // Give the paste a moment, then hand the clipboard back rather
+                // than leaving the transcript sitting in it.
+                previous?.let { old ->
+                    android.os.Handler(android.os.Looper.getMainLooper())
+                        .postDelayed({ runCatching { clipboard.setPrimaryClip(old) } }, 800)
+                }
+                return true
+            }
+
             val shown = focused.text?.toString().orEmpty()
             val hint = focused.hintText?.toString().orEmpty()
             val existing = when {
                 focused.isShowingHintText -> ""
-                shown.isNotEmpty() && shown == hint -> ""
+                hint.isNotEmpty() && shown == hint -> ""
                 else -> shown
             }
             val joined = if (existing.isEmpty()) text else "$existing $text"
@@ -93,16 +109,8 @@ class TypeService : AccessibilityService() {
                     )
                 }
             )
-            if (set) {
-                focused.recycle()
-                return true
-            }
-
-            val clipboard = context.getSystemService(ClipboardManager::class.java)
-            clipboard?.setPrimaryClip(ClipData.newPlainText("dictation", text))
-            val pasted = focused.performAction(AccessibilityNodeInfo.ACTION_PASTE)
             focused.recycle()
-            return pasted
+            return set
         }
     }
 }

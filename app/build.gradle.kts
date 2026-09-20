@@ -15,15 +15,15 @@ val keystoreProperties = Properties().apply {
 val hasReleaseKey = keystoreProperties.containsKey("storeFile")
 
 android {
-    namespace = "com.snflist.sidekey"
+    namespace = "com.jakevibes.sidekey"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.snflist.sidekey"
+        applicationId = "com.jakevibes.sidekey"
         minSdk = 26
         targetSdk = 36
-        versionCode = 5
-        versionName = "1.3"
+        versionCode = 6
+        versionName = "2.0"
     }
 
     signingConfigs {

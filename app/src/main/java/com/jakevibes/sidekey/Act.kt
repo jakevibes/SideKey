@@ -1,4 +1,4 @@
-package com.snflist.sidekey
+package com.jakevibes.sidekey
 
 import android.accessibilityservice.AccessibilityService
 import android.app.NotificationManager
