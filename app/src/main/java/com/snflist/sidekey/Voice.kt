@@ -77,7 +77,11 @@ object Voice {
 
     /** Returns null on success, or why it could not start. */
     @SuppressLint("MissingPermission")
-    fun start(context: Context, onSilence: (() -> Unit)? = null): String? {
+    fun start(
+        context: Context,
+        onLevel: ((Int) -> Unit)? = null,
+        onSilence: (() -> Unit)? = null
+    ): String? {
         if (recording) return null
         if (!isReady(context)) return "the speech model is not installed"
 
@@ -120,8 +124,12 @@ object Voice {
                             // For a press-to-start flow there is no key coming
                             // back up, so the pause after you finish talking is
                             // what ends the recording.
+                            val level = if (onLevel != null || onSilence != null) {
+                                loudness(buffer, read)
+                            } else 0
+                            onLevel?.invoke(level)
+
                             if (onSilence != null) {
-                                val level = loudness(buffer, read)
                                 if (floor < 0) floor = level.toDouble()
 
                                 val speaking = level > floor * OVER_FLOOR &&

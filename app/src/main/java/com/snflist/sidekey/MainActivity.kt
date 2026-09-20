@@ -176,6 +176,27 @@ private fun SlotsScreen() {
                         revision++
                     })
                 )
+                val overlay = DictateOverlay.canShow(context)
+                ListItem(
+                    headlineContent = {
+                        Text(if (overlay) "Listening indicator is on" else "Listening indicator is off")
+                    },
+                    supportingContent = {
+                        Text(
+                            if (overlay) "shows a level meter while it listens"
+                            else "optional - draws over other apps"
+                        )
+                    },
+                    colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),
+                    modifier = Modifier.combinedClickable(onClick = {
+                        activity.startActivity(
+                            Intent(
+                                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                android.net.Uri.parse("package:" + context.packageName)
+                            )
+                        )
+                    })
+                )
                 val typing = TypeService.isEnabled(context)
                 ListItem(
                     headlineContent = {

@@ -11,7 +11,7 @@ what happened is welcome.
 ## Install
 
 [**Download the latest APK**](https://github.com/jakevibes/SideKey/releases/latest)
-— open that page on the phone, tap `SideKey-1.2.apk` under **Assets**, and
+— open that page on the phone, tap `SideKey-1.2.1.apk` under **Assets**, and
 open it when the download finishes.
 
 Android will say your browser is not allowed to install unknown apps; tap the
@@ -21,7 +21,7 @@ sideloading dance, not something this app asks for.
 Or over a cable:
 
 ```bash
-adb install SideKey-1.2.apk
+adb install SideKey-1.2.1.apk
 ```
 
 Every release is signed with the same key, so updates install over the top. A
@@ -117,6 +117,11 @@ published weights; the app is 2 MB without it. It is English-only.
 
 It is not live dictation. Transcription takes a few seconds after you stop
 talking — roughly 6 seconds for 11 seconds of speech on a Titan 2 Elite.
+
+While it listens, a small pill sits at the top of the screen with a live level
+meter, so you can see it hearing you; it switches to a slow sweep while whisper
+transcribes, then disappears. That needs "display over other apps" — without
+it, dictation still works and the notification is the only sign of it.
 
 Recording holds the microphone while you are looking at another app, so it
 runs as a foreground service with a notification you cannot dismiss while it

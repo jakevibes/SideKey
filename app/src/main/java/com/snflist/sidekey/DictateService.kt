@@ -42,10 +42,17 @@ class DictateService : Service() {
         if (Voice.isRecording) return
         startForeground(NOTIFICATION, notification())
 
+        DictateOverlay.show(this)
+
         // The room going quiet is a safety net; a second press is the usual end.
-        val problem = Voice.start(this) { main.post { finishUp() } }
+        val problem = Voice.start(
+            context = this,
+            onLevel = { level -> main.post { DictateOverlay.level(level) } },
+            onSilence = { main.post { finishUp() } }
+        )
         if (problem != null) {
             toast(problem)
+            DictateOverlay.hide()
             stop()
         }
     }
@@ -61,6 +68,7 @@ class DictateService : Service() {
         }
         listening = false
         Voice.stop()
+        DictateOverlay.thinking()
 
         Thread {
             val text = Voice.transcribe(applicationContext)
@@ -76,12 +84,14 @@ class DictateService : Service() {
                         toast("No text box focused - copied instead")
                     }
                 }
+                DictateOverlay.hide()
                 stop()
             }
         }.start()
     }
 
     private fun stop() {
+        DictateOverlay.hide()
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }

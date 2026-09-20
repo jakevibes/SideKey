@@ -72,7 +72,17 @@ class TypeService : AccessibilityService() {
                 return false
             }
 
-            val existing = focused.text?.toString().orEmpty()
+            // getText() returns the *hint* when the field is empty, so an
+            // empty WhatsApp box reads back as "Message" and dictation would
+            // append to that. isShowingHintText is the official way to tell,
+            // and the hint is compared as well for fields that do not set it.
+            val shown = focused.text?.toString().orEmpty()
+            val hint = focused.hintText?.toString().orEmpty()
+            val existing = when {
+                focused.isShowingHintText -> ""
+                shown.isNotEmpty() && shown == hint -> ""
+                else -> shown
+            }
             val joined = if (existing.isEmpty()) text else "$existing $text"
 
             val set = focused.performAction(
