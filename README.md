@@ -11,7 +11,7 @@ what happened is welcome.
 ## Install
 
 [**Download the latest APK**](https://github.com/jakevibes/SideKey/releases/latest)
-— open that page on the phone, tap `SideKey-1.1.apk` under **Assets**, and
+— open that page on the phone, tap `SideKey-1.2.apk` under **Assets**, and
 open it when the download finishes.
 
 Android will say your browser is not allowed to install unknown apps; tap the
@@ -21,7 +21,7 @@ sideloading dance, not something this app asks for.
 Or over a cable:
 
 ```bash
-adb install SideKey-1.1.apk
+adb install SideKey-1.2.apk
 ```
 
 Every release is signed with the same key, so updates install over the top. A
