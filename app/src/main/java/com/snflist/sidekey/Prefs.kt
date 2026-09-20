@@ -26,6 +26,11 @@ class Prefs(context: Context) {
         get() = prefs.getBoolean("torch", false)
         set(value) = prefs.edit().putBoolean("torch", value).apply()
 
+    /** DownloadManager's id for the speech model, so it is not fetched twice. */
+    var modelDownload: Long
+        get() = prefs.getLong("model.download", 0L)
+        set(value) = prefs.edit().putLong("model.download", value).apply()
+
     /** Remembers the ringer step so the cycle is predictable. */
     var ringerStep: Int
         get() = prefs.getInt("ringer", 0)

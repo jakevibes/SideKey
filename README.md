@@ -90,7 +90,8 @@ Open an app · a link · a web search · the camera · the voice assistant · th
 Wi-Fi panel · torch · ringer cycle · do not disturb · a timer · an alarm ·
 play/pause · next · previous · back · home · recents · notification shade ·
 quick settings · lock · screenshot · power menu · call a number · message a
-number · a webhook (GET or POST) · any custom intent URI · any broadcast.
+number · dictate into any text box · a webhook (GET or POST) · any custom
+intent URI · any broadcast.
 
 **One-press dialling** places the call the moment the key is pressed, so it
 needs `CALL_PHONE`. SideKey asks for it when you map a slot to a call, not when
@@ -102,10 +103,48 @@ shortcut, which hands back an `ACTION_CALL` intent.
 The last three are the escape hatch: an `intent:` URI reaches anything else on
 the phone that exposes one, Tasker and Home Assistant included.
 
-Back, recents, the shade, screenshot and lock go through an accessibility
-service, which has to be switched on by hand in Settings > Accessibility. It
-reads nothing: no window content, no key filtering, no events. Everything else
-works without it.
+## Dictation
+
+A slot can be set to **Dictate**: press the key to start listening, press it
+again to stop. What you said is transcribed on the phone and typed into
+whatever text box is focused, in any app.
+
+Speech recognition is [whisper.cpp](https://github.com/ggerganov/whisper.cpp)
+running as a native binary on the phone. **Nothing is sent anywhere** — there
+is no speech API behind this and no network call in the path. The model is
+`ggml-base.en.bin`, 142 MB, downloaded once over Wi-Fi from whisper.cpp's own
+published weights; the app is 2 MB without it. It is English-only.
+
+It is not live dictation. Transcription takes a few seconds after you stop
+talking — roughly 6 seconds for 11 seconds of speech on a Titan 2 Elite.
+
+Recording holds the microphone while you are looking at another app, so it
+runs as a foreground service with a notification you cannot dismiss while it
+is listening. That notification is the point: something recording you in the
+background should be impossible to miss. Recording stops at the second press,
+and also if the room goes quiet for a couple of seconds, so a forgotten
+recording cannot run forever.
+
+## The two accessibility services, and what each can see
+
+SideKey declares two, separately switched on, because they need very different
+amounts of trust:
+
+**SideKey** — drives back, home, recents, the notification shade, quick
+settings, lock, screenshot and the power menu. It is **content-blind**: it
+declares no ability to read window content, handles no events, and filters no
+keys. It exists only to call `performGlobalAction`.
+
+**SideKey Dictation** — types transcripts into the focused text box. This one
+**can read screen content**, and Android will warn you about it in the
+strongest terms it has, because writing into a field means first finding it.
+It handles no events and does nothing on its own; it looks at the screen only
+at the moment a finished transcript needs somewhere to go.
+
+Keeping them apart is deliberate. Everything except dictation works with the
+content-blind one alone, and if you never want an app that can see your screen
+you never have to enable the other. Everything else in SideKey — torch, media,
+apps, deep links, webhooks — needs neither.
 
 ## Where the mapping lives
 

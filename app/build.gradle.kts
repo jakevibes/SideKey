@@ -46,6 +46,14 @@ android {
         compose = true
     }
 
+    // The speech engine is a real executable shipped as libwhispercli.so. It
+    // has to be extracted to disk to be run, so legacy packaging stays on.
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
     buildTypes {
         release {
             // Compose brings a lot of code with it; without R8 the APK roughly

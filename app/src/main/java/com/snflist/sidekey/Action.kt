@@ -57,6 +57,7 @@ enum class Arg { NONE, APP, SHORTCUT, TEXT, URL, NUMBER, TIME, PHONE, INTENT }
 object Kinds {
     const val APP = "app"
     const val SHORTCUT = "shortcut"
+    const val DICTATE = "dictate"
     const val URL = "url"
     const val SEARCH = "search"
     const val INTENT = "intent"
@@ -114,6 +115,7 @@ object Catalogue {
         Kind(Kinds.ASSISTANT, "Open", "Voice assistant"),
         Kind(Kinds.INTERNET, "Open", "Wi-Fi and data panel"),
 
+        Kind(Kinds.DICTATE, "Device", "Dictate: press to start, press to stop"),
         Kind(Kinds.TORCH, "Device", "Torch"),
         Kind(Kinds.RINGER, "Device", "Cycle ringer: loud, vibrate, silent"),
         Kind(Kinds.DND, "Device", "Toggle do not disturb"),

@@ -9,6 +9,13 @@
     <!-- One-press dialling. Asked for only when you map a slot to a call,
          and refusing it just means the dialer opens with the number in it. -->
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <!-- Dictation. Recording only happens between the press that starts it
+         and the press that stops it, and the notification is unmissable while
+         it does. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Silent / do-not-disturb actions. Granted by hand in Settings. -->
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
@@ -28,6 +35,7 @@
 
     <application
         android:allowBackup="true"
+        android:extractNativeLibs="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -185,8 +193,34 @@
             </intent-filter>
         </activity-alias>
 
+        <!-- Holds the microphone between the two key presses. -->
+        <service
+            android:name=".DictateService"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+
+        <!--
+          The one service that can see the screen, kept separate from the
+          content-blind one below so that enabling dictation is a decision of
+          its own. It is used only to write a finished transcript into the
+          focused field.
+        -->
+        <service
+            android:name=".TypeService"
+            android:exported="true"
+            android:label="@string/type_name"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/type_service_config" />
+        </service>
+
         <!-- Only for the system actions (back, recents, shade, lock,
-             screenshot). Enabled by hand; everything else works without it. -->
+             screenshot). Enabled by hand; everything else works without it.
+             This one cannot read the screen at all. -->
         <service
             android:name=".KeyService"
             android:exported="true"

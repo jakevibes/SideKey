@@ -77,6 +77,10 @@ private fun SlotsScreen() {
     // The slot waiting on another app to hand back a deep link.
     var pendingSlot by remember { mutableIntStateOf(0) }
 
+    val dictatePermissions = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { }
+
     val callPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -90,6 +94,11 @@ private fun SlotsScreen() {
         prefs.setAction(slot, action)
         if (action != null && Act.wantsCallPermission(action) && !Act.canCall(context)) {
             callPermission.launch(Manifest.permission.CALL_PHONE)
+        }
+        if (action?.kind == Kinds.DICTATE) {
+            dictatePermissions.launch(
+                arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.POST_NOTIFICATIONS)
+            )
         }
         revision++
     }
@@ -143,6 +152,48 @@ private fun SlotsScreen() {
             }
 
             item {
+                HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                Text(
+                    "DICTATION",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 4.dp)
+                )
+                val haveModel = SpeechModel.installed(context)
+                ListItem(
+                    headlineContent = {
+                        Text(if (haveModel) "Speech model installed" else "Download the speech model")
+                    },
+                    supportingContent = {
+                        Text(
+                            if (haveModel) "runs on the phone, nothing is sent anywhere"
+                            else "${SpeechModel.MEGABYTES} MB over Wi-Fi, once"
+                        )
+                    },
+                    colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),
+                    modifier = Modifier.combinedClickable(onClick = {
+                        if (!haveModel) SpeechModel.download(context)?.let(context::toast)
+                        revision++
+                    })
+                )
+                val typing = TypeService.isEnabled(context)
+                ListItem(
+                    headlineContent = {
+                        Text(if (typing) "Typing is on" else "Typing is off")
+                    },
+                    supportingContent = {
+                        Text(
+                            if (typing) "can write into the focused text box"
+                            else "dictation needs this to type what you said"
+                        )
+                    },
+                    colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),
+                    modifier = Modifier.combinedClickable(onClick = {
+                        activity.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                        context.toast("Find SideKey Dictation in the list")
+                    })
+                )
+
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 val on = KeyService.isEnabled(context)
                 ListItem(

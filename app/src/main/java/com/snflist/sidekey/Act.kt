@@ -52,6 +52,7 @@ object Act {
             else Intent(Settings.ACTION_WIFI_SETTINGS)
         )
 
+        Kinds.DICTATE -> DictateService.toggle(context)
         Kinds.TORCH -> torch(context)
         Kinds.RINGER -> ringer(context)
         Kinds.DND -> dnd(context)
