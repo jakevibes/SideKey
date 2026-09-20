@@ -40,19 +40,20 @@ class DictateService : Service() {
 
     private fun begin() {
         if (Voice.isRecording) return
-        startForeground(NOTIFICATION, notification())
-
+        val auto = Prefs(this).autoStop
+        startForeground(NOTIFICATION, notification(auto))
         DictateOverlay.show(this)
 
-        // The room going quiet is a safety net; a second press is the usual end.
         val problem = Voice.start(
             context = this,
             onLevel = { level -> main.post { DictateOverlay.level(level) } },
-            onSilence = { main.post { finishUp() } }
+            stopOnSilence = auto,
+            maxSeconds = if (auto) Voice.MAX_SECONDS else Voice.MAX_MANUAL_SECONDS,
+            onEnded = { main.post { finishUp() } }
         )
         if (problem != null) {
             toast(problem)
-            DictateOverlay.hide()
+            stage = Stage.IDLE
             stop()
         }
     }
@@ -62,11 +63,10 @@ class DictateService : Service() {
      * off the main thread and the service stays up until it is done.
      */
     private fun finishUp() {
-        if (!Voice.isRecording && !listening) {
-            stop()
-            return
-        }
-        listening = false
+        // Reached from the key press and from the recorder thread ending; only
+        // the first of them should transcribe.
+        if (stage != Stage.RECORDING) return
+        stage = Stage.TRANSCRIBING
         Voice.stop()
         DictateOverlay.thinking()
 
@@ -84,7 +84,7 @@ class DictateService : Service() {
                         toast("No text box focused - copied instead")
                     }
                 }
-                DictateOverlay.hide()
+                stage = Stage.IDLE
                 stop()
             }
         }.start()
@@ -99,7 +99,7 @@ class DictateService : Service() {
     private fun toast(message: String) =
         Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
 
-    private fun notification(): Notification {
+    private fun notification(auto: Boolean): Notification {
         val manager = getSystemService(NotificationManager::class.java)
         if (Build.VERSION.SDK_INT >= 26 && manager?.getNotificationChannel(CHANNEL) == null) {
             manager?.createNotificationChannel(
@@ -109,7 +109,10 @@ class DictateService : Service() {
         val stop = PendingIntentFor(this, Intent(this, DictateService::class.java).setAction(ACTION_STOP))
         return Notification.Builder(this, CHANNEL)
             .setContentTitle("Listening")
-            .setContentText("Press the key again to stop")
+            .setContentText(
+                if (auto) "Stops when you pause, or press the key again"
+                else "Press the key again to stop"
+            )
             .setSmallIcon(android.R.drawable.presence_audio_online)
             .setOngoing(true)
             .addAction(Notification.Action.Builder(null, "Stop", stop).build())
@@ -121,9 +124,16 @@ class DictateService : Service() {
         private const val NOTIFICATION = 1
         const val ACTION_STOP = "com.snflist.sidekey.STOP_DICTATION"
 
-        /** Set while a recording is being started, before Voice reports it. */
+        /**
+         * Three states, because the recorder thread can end a recording at the
+         * same moment a key press does. Without this, both paths started a
+         * transcription and the second one tore the service down while the
+         * first was still running.
+         */
+        private enum class Stage { IDLE, RECORDING, TRANSCRIBING }
+
         @Volatile
-        private var listening = false
+        private var stage = Stage.IDLE
 
         /** One press starts it, the next ends it. */
         fun toggle(context: Context): String? {
@@ -133,13 +143,17 @@ class DictateService : Service() {
             }
 
             val intent = Intent(context, DictateService::class.java)
-            return if (Voice.isRecording || listening) {
-                context.startForegroundService(intent.setAction(ACTION_STOP))
-                null
-            } else {
-                listening = true
-                context.startForegroundService(intent)
-                null
+            return when (stage) {
+                Stage.IDLE -> {
+                    stage = Stage.RECORDING
+                    context.startForegroundService(intent)
+                    null
+                }
+                Stage.RECORDING -> {
+                    context.startForegroundService(intent.setAction(ACTION_STOP))
+                    null
+                }
+                Stage.TRANSCRIBING -> "Still working on the last one"
             }
         }
     }

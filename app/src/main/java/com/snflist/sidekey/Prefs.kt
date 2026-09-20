@@ -26,6 +26,14 @@ class Prefs(context: Context) {
         get() = prefs.getBoolean("torch", false)
         set(value) = prefs.edit().putBoolean("torch", value).apply()
 
+    /**
+     * Whether a recording ends itself when the room goes quiet, or waits to be
+     * told. Pausing to think mid-sentence is the usual reason to turn this off.
+     */
+    var autoStop: Boolean
+        get() = prefs.getBoolean("dictate.autostop", true)
+        set(value) = prefs.edit().putBoolean("dictate.autostop", value).apply()
+
     /** DownloadManager's id for the speech model, so it is not fetched twice. */
     var modelDownload: Long
         get() = prefs.getLong("model.download", 0L)

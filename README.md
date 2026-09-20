@@ -11,7 +11,7 @@ what happened is welcome.
 ## Install
 
 [**Download the latest APK**](https://github.com/jakevibes/SideKey/releases/latest)
-— open that page on the phone, tap `SideKey-1.2.1.apk` under **Assets**, and
+— open that page on the phone, tap `SideKey-1.3.apk` under **Assets**, and
 open it when the download finishes.
 
 Android will say your browser is not allowed to install unknown apps; tap the
@@ -21,7 +21,7 @@ sideloading dance, not something this app asks for.
 Or over a cable:
 
 ```bash
-adb install SideKey-1.2.1.apk
+adb install SideKey-1.3.apk
 ```
 
 Every release is signed with the same key, so updates install over the top. A
@@ -126,9 +126,12 @@ it, dictation still works and the notification is the only sign of it.
 Recording holds the microphone while you are looking at another app, so it
 runs as a foreground service with a notification you cannot dismiss while it
 is listening. That notification is the point: something recording you in the
-background should be impossible to miss. Recording stops at the second press,
-and also if the room goes quiet for a couple of seconds, so a forgotten
-recording cannot run forever.
+background should be impossible to miss. How a recording ends is a setting. By default it stops when you pause, which
+suits short replies; switch it to **only when you press the key again** if you
+think mid-sentence and keep getting cut off. Either way a hard cap applies so a
+forgotten recording cannot run on — 45 seconds when it stops on its own, two
+minutes when you are the one stopping it. Whisper runs at roughly half of real
+time on this phone, so two minutes of talking is over a minute of waiting.
 
 ## The two accessibility services, and what each can see
 

@@ -49,7 +49,16 @@ object Voice {
     private const val MIN_SPEECH_SECONDS = 0.35
 
     /** A hard stop, so a stuck microphone cannot record forever. */
-    private const val MAX_SECONDS = 45
+    const val MAX_SECONDS = 45
+
+    /**
+     * The cap when you are the one deciding when to stop.
+     *
+     * Longer than the automatic cap, because you may be dictating a paragraph,
+     * but not unbounded: whisper runs at roughly half of real time on this
+     * phone, so two minutes of talking is over a minute of waiting afterwards.
+     */
+    const val MAX_MANUAL_SECONDS = 120
 
     @Volatile
     private var recorder: AudioRecord? = null
@@ -77,10 +86,17 @@ object Voice {
 
     /** Returns null on success, or why it could not start. */
     @SuppressLint("MissingPermission")
+    /**
+     * @param stopOnSilence end the recording once the room goes quiet, rather
+     *   than waiting to be told. Either way [onEnded] reports that it has.
+     * @param maxSeconds a hard cap that always applies, whichever way it ends.
+     */
     fun start(
         context: Context,
         onLevel: ((Int) -> Unit)? = null,
-        onSilence: (() -> Unit)? = null
+        stopOnSilence: Boolean = true,
+        maxSeconds: Int = MAX_SECONDS,
+        onEnded: (() -> Unit)? = null
     ): String? {
         if (recording) return null
         if (!isReady(context)) return "the speech model is not installed"
@@ -121,15 +137,17 @@ object Voice {
                             out.write(buffer, 0, read)
                             total += read
 
-                            // For a press-to-start flow there is no key coming
-                            // back up, so the pause after you finish talking is
-                            // what ends the recording.
-                            val level = if (onLevel != null || onSilence != null) {
+                            val level = if (onLevel != null || stopOnSilence) {
                                 loudness(buffer, read)
                             } else 0
                             onLevel?.invoke(level)
 
-                            if (onSilence != null) {
+                            // The cap is outside the silence test on purpose:
+                            // when you are the one stopping it, a forgotten
+                            // recording still has to end by itself.
+                            if (total > bytesPerSecond * maxSeconds) recording = false
+
+                            if (stopOnSilence) {
                                 if (floor < 0) floor = level.toDouble()
 
                                 val speaking = level > floor * OVER_FLOOR &&
@@ -151,14 +169,13 @@ object Voice {
                                     }
                                 }
 
-                                if (total > bytesPerSecond * MAX_SECONDS) recording = false
                             }
                         }
                     }
                     out.flush()
                     writeWavHeader(target, total)
                 }
-                onSilence?.invoke()
+                onEnded?.invoke()
             }.start()
             null
         } catch (e: Exception) {

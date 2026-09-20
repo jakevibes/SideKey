@@ -176,6 +176,21 @@ private fun SlotsScreen() {
                         revision++
                     })
                 )
+                val auto = prefs.autoStop
+                ListItem(
+                    headlineContent = { Text("Stop listening") },
+                    supportingContent = {
+                        Text(
+                            if (auto) "when you pause — ${Voice.MAX_SECONDS}s at most"
+                            else "only when you press the key again — ${Voice.MAX_MANUAL_SECONDS}s at most"
+                        )
+                    },
+                    colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),
+                    modifier = Modifier.combinedClickable(onClick = {
+                        prefs.autoStop = !auto
+                        revision++
+                    })
+                )
                 val overlay = DictateOverlay.canShow(context)
                 ListItem(
                     headlineContent = {
